@@ -179,3 +179,4 @@ export function ResolutionProvider({
   );
 }
 export const useResolutions = () => useContext(resolutionCtx);
+export const MAX_RESOLUTIONS = 5;

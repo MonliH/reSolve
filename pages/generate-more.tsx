@@ -6,13 +6,14 @@ import {
   HStack,
   Spacer,
   Text,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { ArrowLeft, ArrowRight } from "react-feather";
 import ResolutionList from "../components/ResolutionList";
 import { generateMore } from "../lib/api";
-import { useResolutions } from "../lib/resolutionContext";
+import { MAX_RESOLUTIONS, useResolutions } from "../lib/resolutionContext";
 import GradientButton from "../components/GradientButton";
 import withLogo from "../components/withLogo";
 
@@ -28,6 +29,9 @@ function GenerateMore() {
   const [noResults, setNoResults] = useState<boolean>(false);
 
   const generate = async () => {
+    if (resolutions.length >= MAX_RESOLUTIONS) {
+      return;
+    }
     // Generate more resolutions
     setLoading([true, undefined]);
     setNoResults(false);
@@ -37,7 +41,10 @@ function GenerateMore() {
       if (newResolutions.items.length > 0) {
         dispatch({
           type: "ADD_MANY",
-          resolutions: newResolutions.items,
+          resolutions: newResolutions.items.slice(
+            0,
+            MAX_RESOLUTIONS - resolutions.length
+          ),
           aiGenerated: true,
         });
       } else {
@@ -63,13 +70,28 @@ function GenerateMore() {
         <Spacer flexGrow={0} flexBasis={[null, null, "0", "50vw"]} />
       </HStack>
       <HStack align="center" mt="4">
-        <GradientButton
-          onClick={generate}
-          isDisabled={loading || resolutions.length === 0}
-          isLoading={loading}
+        <Tooltip
+          label={
+            resolutions.length >= MAX_RESOLUTIONS
+              ? `You may not make over ${MAX_RESOLUTIONS} resolutions`
+              : ""
+          }
+          hasArrow
         >
-          Generate More
-        </GradientButton>
+          <span>
+            <GradientButton
+              onClick={generate}
+              isDisabled={
+                loading ||
+                resolutions.length === 0 ||
+                resolutions.length >= MAX_RESOLUTIONS
+              }
+              isLoading={loading}
+            >
+              Generate More
+            </GradientButton>
+          </span>
+        </Tooltip>
         {error ? (
           <Text color="red">{error}</Text>
         ) : noResults ? (
