@@ -30,26 +30,25 @@ async function generateMore(
 - Be a more positive person
 - Go outside more
 - Make more friends
-===
+-----
 Here are some New Year's Resolutions similar to "Limit time I spend on screens" and "Stop playing video games":
 - Spend less time on social media
 - Get more exercise
 - Read more books
 - Get more sleep
-===
+-----
 Here are some New Year's Resolutions similar to "Save more money":
 - Ask for a raise
 - Eat out less
 - Find a purpose in life
-===
+-----
 Here are some New Year's Resolutions similar to "Find a physical activity I enjoy" and "Eat healthier food":
 - Sit less and move more
 - Get more quality sleep
 - Cook more meals at home
 - Spend more time outdoors
-===
-Here are some New Year's Resolutions similar to ${similarString}:
-- `;
+-----
+Here are some New Year's Resolutions similar to ${similarString}:`;
   const generated = await fetch("https://api.eleuther.ai/completion", {
     method: "POST",
     body: JSON.stringify({
@@ -70,13 +69,13 @@ Here are some New Year's Resolutions similar to ${similarString}:
 
   const json = await generated.json();
   const generatedList = json[0].generated_text as string;
-  if (generatedList.match(/===/) === null) {
+  if (generatedList.match(/-----/) === null) {
     return [];
   }
   const generatedItems = generatedList
-    .split("===")[0]
+    .split("-----")[0]
     .split("\n")
-    .filter((s) => s || s === "===")
+    .filter((s) => s || s === "-----")
     .map((s) => s.replace(/^-\s*/, "").replace(/^\s*/, ""))
     .slice(0, 6);
 

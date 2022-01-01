@@ -44,7 +44,7 @@ const Home: NextPage = () => {
   const resolutionsSet = new Set(resolutions.map((r) => r.text));
 
   return (
-    <Box p="20">
+    <Box p="20" pr="50">
       <ResolutionList editable>
         <Heading>Add Your Resolutions</Heading>
       </ResolutionList>

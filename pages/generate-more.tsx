@@ -8,10 +8,11 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Star } from "react-feather";
+import { ArrowLeft, ArrowRight } from "react-feather";
 import ResolutionList from "../components/ResolutionList";
 import { generateMore } from "../lib/api";
 import { useResolutions } from "../lib/resolutionContext";
+import GradientButton from "../components/GradientButton";
 
 function GenerateMore() {
   const router = useRouter();
@@ -56,21 +57,14 @@ function GenerateMore() {
         </Text>
       </ResolutionList>
       <HStack align="center" mt="4">
-        <Button
-          display="flex"
-          alignItems="center"
-          leftIcon={<Star size={20} />}
+        <GradientButton
           onClick={generate}
           isDisabled={loading}
-          loadingText="Generating"
-          size="lg"
+          disabled={loading}
           isLoading={loading}
-          variant={loading ? "outline" : "solid"}
         >
-          <Box as="span" mt="1">
-            Generate More
-          </Box>
-        </Button>
+          Generate More
+        </GradientButton>
         {error ? (
           <Text color="red">{error}</Text>
         ) : noResults ? (
@@ -93,7 +87,9 @@ function GenerateMore() {
         <Button
           flexGrow={0}
           rightIcon={<ArrowRight />}
-          onClick={() => router.replace("/suggestions")}
+          onClick={() =>
+            router.replace("/next-steps", undefined, { shallow: true })
+          }
           size="md"
           mt="10"
           colorScheme={generated ? "green" : "gray"}
