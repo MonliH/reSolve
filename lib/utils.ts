@@ -55,4 +55,7 @@ export function normalizeString(s: string): Promise<string> {
   });
 }
 
+export const API_KEY: string = process.env.API_KEY!;
 export const ML_MODEL_URL: string = process.env.ML_MODEL_URL!;
+export const DAVINCI_URL: string =
+  "https://api.openai.com/v1/engines/davinci/completions";

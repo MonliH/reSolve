@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { ML_MODEL_URL } from "../../lib/utils";
+import { API_KEY, DAVINCI_URL, ML_MODEL_URL } from "../../lib/utils";
 
 export type NextSteps = { nextSteps: string[] } | { error: string };
 
@@ -29,17 +29,20 @@ Steps to take:
 -----
 Goal: ${goal}
 Steps to take:`;
-  const generated = await fetch(ML_MODEL_URL, {
+  const generated = await fetch(DAVINCI_URL, {
     method: "POST",
     body: JSON.stringify({
-      context: prompt,
-      top_p: 0.9,
-      temp: temperature,
-      response_length: 64,
-      remove_input: true,
+      prompt,
+      temperature,
+      top_p: 1,
+      max_tokens: 48,
+      stop: ["-----"],
+      frequency_penalty: 0,
+      presence_penalty: 0,
     }),
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${API_KEY}`,
     },
   });
 
@@ -48,14 +51,10 @@ Steps to take:`;
   }
 
   const json = await generated.json();
-  const generatedList = json[0].generated_text as string;
-  if (generatedList.match(/-----/) === null) {
-    return [];
-  }
+  const generatedList = json.choices[0].text as string;
   const generatedItems = generatedList
-    .split("-----")[0]
     .split("\n")
-    .filter((s) => s || s === "-----")
+    .filter((s) => s)
     .map((s) => s.replace(/^-\s*/, "").replace(/^\s*/, ""))
     .slice(0, 6);
 
@@ -78,8 +77,8 @@ export default async function handler(
   try {
     let nextSteps = await generateNextSteps(goal, temperature ?? 0.5);
     if (!nextSteps) {
-      res.status(429).json({
-        error: "Currently receiving too many requests. Please slow down.",
+      res.status(500).json({
+        error: "Failed to generate new suggestions.",
       });
     } else {
       res.status(200).json({ nextSteps });

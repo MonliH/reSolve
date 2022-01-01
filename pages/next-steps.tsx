@@ -34,36 +34,12 @@ function Tips() {
       }
 
       dispatch({ type: "SET_LOADING", loading: true, idx: i });
-      if (i !== 0) {
-        await new Promise((r) => setTimeout(r, 2500));
-      }
       dispatch({ type: "RESET_ERROR", idx: i });
       const [value, status] = await generateNextSteps(resolutions[i].text);
       if ("nextSteps" in value) {
         dispatch({ type: "SET_NEXT", idx: i, nextSteps: value.nextSteps });
       } else {
-        if (status === 429) {
-          // try querying again
-          let gotResponse = false;
-          for (let j = 0; j < 10; j++) {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            const [value, _] = await generateNextSteps(resolutions[i].text);
-            if ("nextSteps" in value) {
-              gotResponse = true;
-              dispatch({
-                type: "SET_NEXT",
-                idx: i,
-                nextSteps: value.nextSteps,
-              });
-              break;
-            }
-          }
-          if (!gotResponse) {
-            dispatch({ type: "SET_ERROR", idx: i, error: value.error });
-          }
-        } else {
-          dispatch({ type: "SET_ERROR", error: value.error, idx: i });
-        }
+        dispatch({ type: "SET_ERROR", error: value.error, idx: i });
       }
       dispatch({ type: "SET_LOADING", loading: false, idx: i });
     }
