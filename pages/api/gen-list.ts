@@ -117,6 +117,10 @@ export default async function handler(
 ) {
   const { items, temperature }: { items: string[]; temperature?: number } =
     JSON.parse(req.body);
-  let newItems = await generateMore(items, temperature ?? 0.5);
-  res.status(200).json({ items: newItems });
+  try {
+    let newItems = await generateMore(items, temperature ?? 0.5);
+    res.status(200).json({ items: newItems });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to generate new suggestions." });
+  }
 }
