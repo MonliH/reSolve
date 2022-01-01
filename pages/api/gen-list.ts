@@ -4,35 +4,49 @@ import natural from "natural";
 
 export type NewItems = { items: string[] } | { error: string };
 
+function getRandom<T>(arr: T[], n: number): T[] {
+  var result = new Array(n),
+    len = arr.length,
+    taken = new Array(len);
+  if (n > len)
+    throw new RangeError("getRandom: more elements taken than available");
+  while (n--) {
+    var x = Math.floor(Math.random() * len);
+    result[n] = arr[x in taken ? taken[x] : x];
+    taken[x] = --len in taken ? taken[len] : len;
+  }
+  return result;
+}
+
 async function generateMore(
   items: string[],
   temperature: number
-): Promise<string[]> {
+): Promise<string[] | null> {
   const similarString = makeCommaSeparatedString(
-    items.map((item) => `"${item}"`)
+    getRandom(items, Math.min(items.length, 2)).map((item) => `"${item}"`)
   );
   const prompt = `Here are some New Year's Resolutions similar to "Improve my social anxiety":
-- Speak with a therapist about my social anxiety
-- Challenge negative thoughts about myself
-- Practice speaking with people more
-- Be more kind to people
+- Improve my mental health
+- Be a more positive person
+- Go outside more
+- Make more friends
 ===
-Here are some New Year's Resolutions similar to "Find a physical activity I enjoy", "Eat more whole grain foods", and "Get more quality sleep":
-- Sit less and move more
-- Cook more meals at home
-- Spend more time outdoors
-===
-Here are some New Year's Resolutions similar to "Limit time I spend on screens" and "Live a more balanced life":
+Here are some New Year's Resolutions similar to "Limit time I spend on screens" and "Stop playing video games":
 - Spend less time on social media
-- Stop playing video games
+- Get more exercise
 - Read more books
+- Get more sleep
 ===
 Here are some New Year's Resolutions similar to "Save more money":
-- Make a budget and stick to it
-- Avoid using my credit card for purchases
-- Track all my spending
-- Find a higher paying job
+- Ask for a raise
 - Eat out less
+- Find a purpose in life
+===
+Here are some New Year's Resolutions similar to "Find a physical activity I enjoy" and "Eat healthier food":
+- Sit less and move more
+- Get more quality sleep
+- Cook more meals at home
+- Spend more time outdoors
 ===
 Here are some New Year's Resolutions similar to ${similarString}:
 - `;
@@ -42,7 +56,7 @@ Here are some New Year's Resolutions similar to ${similarString}:
       context: prompt,
       top_p: 0.9,
       temp: temperature,
-      response_length: 128,
+      response_length: 32,
       remove_input: true,
     }),
     headers: {
@@ -50,8 +64,15 @@ Here are some New Year's Resolutions similar to ${similarString}:
     },
   });
 
+  if (!(generated.status >= 200 && generated.status < 300)) {
+    return null;
+  }
+
   const json = await generated.json();
   const generatedList = json[0].generated_text as string;
+  if (generatedList.match(/===/) === null) {
+    return [];
+  }
   const generatedItems = generatedList
     .split("===")[0]
     .split("\n")
@@ -59,19 +80,24 @@ Here are some New Year's Resolutions similar to ${similarString}:
     .map((s) => s.replace(/^-\s*/, "").replace(/^\s*/, ""))
     .slice(0, 6);
 
+  let abort = false;
+
   // Remove similar items from generated list
   const allItems = await Promise.all(
     generatedItems.map(async (item, idx) => {
       const punctuationCount =
         item.match(/[.,\/#!\?$%\^&\*;:{}=\-_`~()]/g)?.length || 0;
       const normalized = await normalizeString(item);
-      return [normalized, idx, punctuationCount > item.length / 5] as [
-        string,
-        number,
-        boolean
-      ];
+      if (punctuationCount > item.length / 5) {
+        abort = true;
+      }
+      return [normalized, idx, false] as [string, number, boolean];
     })
   );
+
+  if (abort) {
+    return [];
+  }
 
   await Promise.all(
     items.map(async (unnormalized) => {
@@ -116,8 +142,14 @@ export default async function handler(
   const { items, temperature }: { items: string[]; temperature?: number } =
     JSON.parse(req.body);
   try {
-    let newItems = await generateMore(items, temperature ?? 0.15);
-    res.status(200).json({ items: newItems });
+    let newItems = await generateMore(items, temperature ?? 0.8);
+    if (!newItems) {
+      res.status(429).json({
+        error: "Currently receiving too many requests. Please slow down.",
+      });
+    } else {
+      res.status(200).json({ items: newItems });
+    }
   } catch (e) {
     res.status(500).json({ error: "Failed to generate new suggestions." });
   }

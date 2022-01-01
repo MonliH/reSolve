@@ -6,7 +6,10 @@ export async function generateMore(
 ): Promise<NewItems> {
   const request = await fetch("/api/gen-list", {
     method: "POST",
-    body: JSON.stringify({ items: original, temperature }),
+    body: JSON.stringify({
+      items: original,
+      temperature,
+    }),
   });
 
   return await request.json();

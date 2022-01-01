@@ -1,10 +1,17 @@
 import {
   Box,
   Button,
+  FormControl,
+  FormLabel,
   Heading,
   HStack,
   IconButton,
   Input,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
+  Kbd,
+  Select,
   Spacer,
   Tooltip,
 } from "@chakra-ui/react";
@@ -19,11 +26,9 @@ const Home: NextPage = () => {
   const [curr, setCurr] = useState("");
   const [{ resolutions }, dispatch] = useResolutions();
 
-  const addResolution = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (curr) {
-      dispatch({ type: "ADD", text: curr });
-      setCurr("");
+  const addResolution = (resolution: string) => {
+    if (resolution) {
+      dispatch({ type: "ADD", text: resolution });
     }
   };
 
@@ -36,33 +41,64 @@ const Home: NextPage = () => {
     }
   };
 
+  const resolutionsSet = new Set(resolutions.map((r) => r.text));
+
   return (
     <Box p="20">
       <ResolutionList editable>
-        <Heading>Your Resolutions</Heading>
+        <Heading>Add Your Resolutions</Heading>
       </ResolutionList>
-      <form onSubmit={addResolution}>
-        <HStack align="center" mt="3">
-          <Tooltip label={!curr && "Enter a resolution"} hasArrow>
-            <Box>
-              <IconButton
-                aria-label="Add Resolution"
-                icon={<Plus />}
-                colorScheme="green"
-                disabled={!curr}
-                type="submit"
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          addResolution(curr);
+          setCurr("");
+        }}
+      >
+        <HStack align="center" mt="7">
+          <FormControl flexBasis={300} flexShrink={0}>
+            <FormLabel>Chose a preset resolution</FormLabel>
+            <Select
+              placeholder="Resolution"
+              value=""
+              onChange={(e) => {
+                e.preventDefault();
+                addResolution(e.target.value);
+              }}
+            >
+              {[
+                "Improve my mental health",
+                "Eat healthier food",
+                "Stop playing video games",
+                "Save more money",
+              ].map((v, idx) =>
+                resolutionsSet.has(v) ? null : (
+                  <option key={idx} value={v}>
+                    {v}
+                  </option>
+                )
+              )}
+            </Select>
+          </FormControl>
+          <FormControl flexGrow={3} width="100%">
+            <FormLabel>Or enter your own:</FormLabel>
+            <InputGroup>
+              <Input
+                value={curr}
+                onChange={(e) => setCurr(e.target.value)}
+                placeholder="e.g., eat healthier, ask for a promotion at my company, etc."
                 size="md"
-                variant="outline"
               />
-            </Box>
-          </Tooltip>
-          <Input
-            value={curr}
-            onChange={(e) => setCurr(e.target.value)}
-            placeholder="e.g., eat healthier, ask for a promotion at my company, etc."
-            mb="3"
-            size="md"
-          />
+              <InputRightElement mr="15px">
+                <Tooltip label="Press enter to add" hasArrow>
+                  <Box>
+                    <Kbd>Enter</Kbd>
+                  </Box>
+                </Tooltip>
+              </InputRightElement>
+            </InputGroup>
+          </FormControl>
+          <Spacer flexGrow={2} flexBasis={1000} />
         </HStack>
       </form>
       <Tooltip

@@ -15,7 +15,8 @@ type ResolutionAction =
   | { type: "ADD"; text: string }
   | { type: "REMOVE"; idx: number }
   | { type: "UPDATE"; idx: number; text: string }
-  | { type: "ADD_MANY"; resolutions: string[] };
+  | { type: "ADD_MANY"; resolutions: string[] }
+  | { type: "SET_GENERATED"; generated: boolean };
 
 function reducer(
   state: ResolutionCtx,
@@ -33,6 +34,10 @@ function reducer(
         resolutions: {
           [action.idx]: { text: { $set: action.text } },
         },
+      });
+    case "SET_GENERATED":
+      return update(state, {
+        generated: { $set: action.generated },
       });
     case "ADD_MANY":
       return {

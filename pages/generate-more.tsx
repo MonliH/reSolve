@@ -28,37 +28,27 @@ function GenerateMore() {
     undefined,
   ]);
 
-  // true = trying again
-  // false = not trying again
-  // null = tried again, but still no result
-  const [tryingAgain, setTryingAgain] = useState<boolean | null>(false);
+  const [noResults, setNoResults] = useState<boolean>(false);
 
   const generate = async () => {
     // Generate more resolutions
     setLoading([true, undefined]);
+    setNoResults(false);
     const textResolutions = resolutions.map((r) => r.text);
     let newResolutions = await generateMore(textResolutions);
     if ("items" in newResolutions) {
       if (newResolutions.items.length > 0) {
         dispatch({ type: "ADD_MANY", resolutions: newResolutions.items });
       } else {
-        setTryingAgain(true);
-        newResolutions = await generateMore(textResolutions, 0.3);
-        if ("items" in newResolutions) {
-          if (newResolutions.items.length > 0) {
-            dispatch({ type: "ADD_MANY", resolutions: newResolutions.items });
-            setTryingAgain(false);
-          } else {
-            setTryingAgain(null);
-          }
-        }
+        setNoResults(true);
       }
+      dispatch({ type: "SET_GENERATED", generated: true });
     }
     setLoading([false, (newResolutions as any).error]);
   };
 
   return (
-    <Box p="20">
+    <Box p="20" pr="50">
       <ResolutionList>
         <Heading>Generate More</Heading>
         <Text>
@@ -72,7 +62,7 @@ function GenerateMore() {
           leftIcon={<Star size={20} />}
           onClick={generate}
           isDisabled={loading}
-          loadingText={tryingAgain === true ? "Retrying" : "Generating"}
+          loadingText="Generating"
           size="lg"
           isLoading={loading}
           variant={loading ? "outline" : "solid"}
@@ -81,14 +71,9 @@ function GenerateMore() {
             Generate More
           </Box>
         </Button>
-        {tryingAgain === true ? (
-          <Text color="blue">
-            No suggestions generated. Trying again with more dynamic network
-            parameters.
-          </Text>
-        ) : error ? (
+        {error ? (
           <Text color="red">{error}</Text>
-        ) : tryingAgain === null ? (
+        ) : noResults ? (
           <Text color="orange">
             No more results generated. Feel free to try again.
           </Text>
