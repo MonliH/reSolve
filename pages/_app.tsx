@@ -8,8 +8,8 @@ function MyApp({ Component, pageProps }: AppProps) {
     <ResolutionProvider>
       <ChakraProvider>
         <Head>
-          <link rel="icon" type="image/png" href="/resolutionSquare64.png" />
-          <title>reSolution</title>
+          <link rel="icon" type="image/png" href="/resolveSquare64.png" />
+          <title>reSolve</title>
         </Head>
         <Component {...pageProps} />
       </ChakraProvider>
