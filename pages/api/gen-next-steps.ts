@@ -8,27 +8,27 @@ async function generateNextSteps(
   temperature: number
 ): Promise<string[] | null> {
   const prompt = `Goal: Spend less money
-Steps to take:
+Specific steps to take:
 - Create a budget for the year
 - Stop relying on credit cards
 - Track all of your spending, including small purchases
 - Plan your meals and shopping each week to avoid eating out
 -----
-Goal: Loose weight
-Steps to take:
-- Get a gym membership
+Goal: Lose weight
+Specific steps to take:
 - Hire a personal trainer to improve your form
-- Choose a diet and stick to it
+- Choose a diet and stick to it for the rest of the year
+- Run a 10 kilometer race
 - Be consistent
 -----
 Goal: Play fewer video games
-Steps to take:
-- Spend more time outside with friends and family
-- Limit your screen time
-- Uninstall games you spend too much time on
+Specific steps to take:
+- Spend at least an hour outside with friends and family
+- Limit your screen time to 30 minutes
+- Uninstall the games you spend too much time on
 -----
 Goal: ${goal}
-Steps to take:`;
+Specific steps to take:`;
   const generated = await fetch(DAVINCI_URL, {
     method: "POST",
     body: JSON.stringify({

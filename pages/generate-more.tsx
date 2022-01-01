@@ -8,7 +8,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ArrowLeft, ArrowRight } from "react-feather";
 import ResolutionList from "../components/ResolutionList";
 import { generateMore } from "../lib/api";

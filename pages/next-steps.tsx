@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Collapse,
   Divider,
   Heading,
   HStack,
@@ -11,12 +12,50 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import React, { useState } from "react";
 import { ArrowLeft } from "react-feather";
 import GradientButton from "../components/GradientButton";
 import withLogo from "../components/withLogo";
 import { generateNextSteps } from "../lib/api";
-import { useResolutions } from "../lib/resolutionContext";
+import { Resolution, useResolutions } from "../lib/resolutionContext";
+
+function NextSteps({
+  resolution,
+  onChange,
+}: {
+  resolution: Resolution;
+  onChange: (checked: boolean, index: number) => void;
+}) {
+  const r = resolution;
+  return (
+    <>
+      {r.nextStepError && <Text color="red">{r.nextStepError}</Text>}
+      <Collapse in={r.nextSteps !== null}>
+        <Box mt="2">
+          {r.nextSteps?.length === null && (
+            <Text>No next steps generated.</Text>
+          )}
+          <VStack align="left">
+            {r.nextSteps?.map((next, idx) => {
+              return (
+                <HStack key={next.text + idx}>
+                  <Checkbox
+                    flexGrow={0}
+                    isChecked={next.done}
+                    onChange={(e) => onChange(e.target.checked, idx)}
+                  >
+                    {next.text}
+                  </Checkbox>
+                  <Spacer />
+                </HStack>
+              );
+            })}
+          </VStack>
+        </Box>
+      </Collapse>
+    </>
+  );
+}
 
 function Tips() {
   const router = useRouter();
@@ -35,7 +74,7 @@ function Tips() {
 
       dispatch({ type: "SET_LOADING", loading: true, idx: i });
       dispatch({ type: "RESET_ERROR", idx: i });
-      const [value, status] = await generateNextSteps(resolutions[i].text);
+      const [value, _] = await generateNextSteps(resolutions[i].text);
       if ("nextSteps" in value) {
         dispatch({ type: "SET_NEXT", idx: i, nextSteps: value.nextSteps });
       } else {
@@ -52,13 +91,13 @@ function Tips() {
     <>
       <Heading>Your Next Steps</Heading>
       <Text mb="4">
-        Now we{"'"}ll use some more AI magic to give you next steps to take, so
-        can can accomplish your goals!
+        Now we{"'"}ll use some more AI magic to give you <b>specific</b> next
+        steps to take, so can can accomplish your goals!
       </Text>
       <Box>
         {resolutions.map((r, rIdx) => {
           return (
-            <>
+            <React.Fragment key={rIdx + r.text}>
               <Box my="4">
                 <HStack align="center">
                   <Text mr="2" fontSize="2xl">
@@ -66,39 +105,20 @@ function Tips() {
                   </Text>
                   {r.loading ? <Spinner color="green.300" size="sm" /> : null}
                 </HStack>
-                {r.nextStepError && <Text color="red">{r.nextStepError}</Text>}
-                {r.nextSteps !== null ? (
-                  r.nextSteps.length == 0 ? (
-                    <Text>No Next Steps Generated</Text>
-                  ) : (
-                    <VStack align="left">
-                      {r.nextSteps.map((next, idx) => {
-                        return (
-                          <HStack key={next.text + idx}>
-                            <Checkbox
-                              flexGrow={0}
-                              isChecked={next.done}
-                              onChange={(e) =>
-                                dispatch({
-                                  type: "SET_NEXT_STEP_DONE",
-                                  resolutionIdx: rIdx,
-                                  setIdx: idx,
-                                  value: e.target.checked,
-                                })
-                              }
-                            >
-                              {next.text}
-                            </Checkbox>
-                            <Spacer />
-                          </HStack>
-                        );
-                      })}
-                    </VStack>
-                  )
-                ) : null}
+                <NextSteps
+                  resolution={r}
+                  onChange={(checked: boolean, idx: number) =>
+                    dispatch({
+                      type: "SET_NEXT_STEP_DONE",
+                      resolutionIdx: rIdx,
+                      setIdx: idx,
+                      value: checked,
+                    })
+                  }
+                />
               </Box>
               <Divider />
-            </>
+            </React.Fragment>
           );
         })}
       </Box>

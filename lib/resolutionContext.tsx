@@ -10,12 +10,12 @@ import React, {
 } from "react";
 import { createContext, useContext } from "react";
 
-interface NextStep {
+export interface NextStep {
   text: string;
   done: boolean;
 }
 
-interface Resolution {
+export interface Resolution {
   text: string;
   loading: boolean;
   nextSteps: NextStep[] | null;

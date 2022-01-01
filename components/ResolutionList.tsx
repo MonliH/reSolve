@@ -11,10 +11,9 @@ import {
   IconButton,
   useEditableControls,
 } from "@chakra-ui/react";
-import { useSpring } from "react-spring";
 import { ReactNode, useEffect, useState } from "react";
 import { Check, Edit2, Trash, X } from "react-feather";
-import { useResolutions } from "../lib/resolutionContext";
+import { Resolution, useResolutions } from "../lib/resolutionContext";
 
 function EditableControls({ onDelete }: { onDelete: () => void }) {
   const {
@@ -52,6 +51,64 @@ function EditableControls({ onDelete }: { onDelete: () => void }) {
         colorScheme="red"
       />
     </ButtonGroup>
+  );
+}
+
+function Edit({
+  r,
+  idx,
+  editable,
+}: {
+  r: Resolution;
+  idx: number;
+  editable: boolean;
+}) {
+  const [_, dispatch] = useResolutions();
+  const rText = r.text;
+  const [value, setValue] = useState(rText);
+
+  useEffect(() => {
+    setValue(rText);
+  }, [rText]);
+
+  const onSubmit = (e: string) => {
+    dispatch({ type: "UPDATE", idx, text: value });
+  };
+  return (
+    <Editable
+      value={value}
+      onChange={setValue}
+      isPreviewFocusable={false}
+      display="flex"
+      alignItems="center"
+      pt="2"
+      fontSize="2xl"
+      onSubmit={onSubmit}
+      flexGrow={1}
+    >
+      <EditableInput flexGrow={1} />
+      <Box flexGrow={1}>
+        <EditablePreview />
+        {r.aiGenerated && (
+          <Box
+            as="span"
+            ml="2"
+            color="blue.300"
+            userSelect="none"
+            cursor="default"
+          >
+            <sup>AI</sup>
+          </Box>
+        )}
+      </Box>
+      {(editable || r.aiGenerated) && (
+        <Box ml="3">
+          <EditableControls
+            onDelete={() => dispatch({ type: "REMOVE", idx })}
+          />
+        </Box>
+      )}
+    </Editable>
   );
 }
 
@@ -93,40 +150,7 @@ export default function ResolutionList({
             )
           }
         >
-          <HStack flexGrow={1} fontSize="2xl" my="2">
-            <Editable
-              value={r.text}
-              onChange={(s) => dispatch({ type: "UPDATE", idx, text: s })}
-              isPreviewFocusable={false}
-              display="flex"
-              alignItems="center"
-              pt="2"
-              flexGrow={1}
-            >
-              <EditableInput flexGrow={1} />
-              <Box flexGrow={1}>
-                <EditablePreview />
-                {r.aiGenerated && (
-                  <Box
-                    as="span"
-                    ml="2"
-                    color="blue.300"
-                    userSelect="none"
-                    cursor="default"
-                  >
-                    <sup>AI</sup>
-                  </Box>
-                )}
-              </Box>
-              {(editable || r.aiGenerated) && (
-                <Box ml="3">
-                  <EditableControls
-                    onDelete={() => dispatch({ type: "REMOVE", idx })}
-                  />
-                </Box>
-              )}
-            </Editable>
-          </HStack>
+          <Edit r={r} idx={idx} editable={editable} />
           <Divider />
         </Box>
       ))}

@@ -5,10 +5,8 @@ import {
   FormLabel,
   Heading,
   HStack,
-  IconButton,
   Input,
   InputGroup,
-  InputLeftElement,
   InputRightElement,
   Kbd,
   Select,
@@ -17,8 +15,8 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
-import { FormEvent, useState } from "react";
-import { ArrowRight, Plus } from "react-feather";
+import { useState } from "react";
+import { ArrowRight } from "react-feather";
 import { useRouter } from "next/router";
 import { useResolutions } from "../lib/resolutionContext";
 import ResolutionList from "../components/ResolutionList";
@@ -80,7 +78,7 @@ const Home: NextPage = () => {
                   {[
                     "Improve my mental health",
                     "Eat healthier food",
-                    "Stop playing video games",
+                    "Play fewer video games",
                     "Save more money",
                   ].map((v, idx) =>
                     resolutionsSet.has(v) ? null : (
