@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { ML_MODEL_URL } from "../../lib/utils";
 
 export type NextSteps = { nextSteps: string[] } | { error: string };
 
@@ -28,7 +29,7 @@ Steps to take:
 -----
 Goal: ${goal}
 Steps to take:`;
-  const generated = await fetch("https://api.eleuther.ai/completion", {
+  const generated = await fetch(ML_MODEL_URL, {
     method: "POST",
     body: JSON.stringify({
       context: prompt,

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="464.47385mm"
+   height="104.64892mm"
+   viewBox="0 0 464.47385 104.64892"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20, custom)"
+   sodipodi:docname="resolutionLogo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#999999"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     fit-margin-top="10"
+     fit-margin-left="10"
+     fit-margin-right="10"
+     fit-margin-bottom="10"
+     lock-margins="true"
+     inkscape:zoom="0.48882427"
+     inkscape:cx="1128.2173"
+     inkscape:cy="319.13309"
+     inkscape:window-width="1920"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer2" />
+  <defs
+     id="defs2">
+    <rect
+       x="-404.35831"
+       y="218.50101"
+       width="354.70154"
+       height="330.47247"
+       id="rect72057" />
+    <rect
+       x="116.23223"
+       y="159.13701"
+       width="1493.7189"
+       height="320.44611"
+       id="rect26684" />
+    <linearGradient
+       id="linearGradient20818"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop20816" />
+    </linearGradient>
+    <rect
+       x="218.0103"
+       y="323.96979"
+       width="250.39372"
+       height="237.34656"
+       id="rect3531" />
+  </defs>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer 2"
+     transform="translate(87.171484,-48.066284)">
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke-width:0.277793"
+       id="rect49427"
+       width="363.62906"
+       height="84.648918"
+       x="3.6733112"
+       y="58.066284" />
+    <text
+       xml:space="preserve"
+       transform="matrix(0.27386606,0,0,0.28206634,34.065911,2.1883115)"
+       id="text72055"
+       style="font-style:normal;font-weight:normal;font-size:233.401px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect72057);fill:#000000;fill-opacity:1;stroke:none"><tspan
+         x="-404.35742"
+         y="429.53536"
+         id="tspan92552"><tspan
+           style="font-weight:bold;font-family:'FuraCode Nerd Font Mono';-inkscape-font-specification:'FuraCode Nerd Font Mono Bold'"
+           id="tspan92550">re</tspan></tspan></text>
+  </g>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(87.171484,-48.066284)">
+    <text
+       xml:space="preserve"
+       transform="matrix(0.23157743,0,0,0.23157743,-3.6801573,32.087417)"
+       id="text26682"
+       style="font-style:normal;font-weight:normal;font-size:266.667px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect26684);fill:#ffffff;fill-opacity:1;stroke:none"><tspan
+         x="116.23242"
+         y="392.47034"
+         id="tspan92556"><tspan
+           style="font-weight:bold;font-family:'FiraCode Nerd Font Mono';-inkscape-font-specification:'FiraCode Nerd Font Mono Bold'"
+           id="tspan92554">Solution.</tspan></tspan></text>
+  </g>
+</svg>

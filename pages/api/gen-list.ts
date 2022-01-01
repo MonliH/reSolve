@@ -1,5 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { makeCommaSeparatedString, normalizeString } from "../../lib/utils";
+import {
+  makeCommaSeparatedString,
+  ML_MODEL_URL,
+  normalizeString,
+} from "../../lib/utils";
 import natural from "natural";
 
 export type NewItems = { items: string[] } | { error: string };
@@ -49,7 +53,7 @@ Here are some New Year's Resolutions similar to "Find a physical activity I enjo
 - Spend more time outdoors
 -----
 Here are some New Year's Resolutions similar to ${similarString}:`;
-  const generated = await fetch("https://api.eleuther.ai/completion", {
+  const generated = await fetch(ML_MODEL_URL, {
     method: "POST",
     body: JSON.stringify({
       context: prompt,

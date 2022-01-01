@@ -54,3 +54,5 @@ export function normalizeString(s: string): Promise<string> {
     });
   });
 }
+
+export const ML_MODEL_URL: string = process.env.ML_MODEL_URL!;
