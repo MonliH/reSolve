@@ -20,6 +20,7 @@ interface Resolution {
   loading: boolean;
   nextSteps: NextStep[] | null;
   nextStepError?: string;
+  aiGenerated?: boolean;
 }
 
 interface ResolutionCtx {
@@ -32,7 +33,7 @@ type ResolutionAction =
   | { type: "OVERWRITE"; value: ResolutionCtx }
   | { type: "REMOVE"; idx: number }
   | { type: "UPDATE"; idx: number; text: string }
-  | { type: "ADD_MANY"; resolutions: string[] }
+  | { type: "ADD_MANY"; resolutions: string[]; aiGenerated: boolean }
   | { type: "SET_GENERATED"; generated: boolean }
   | { type: "SET_LOADING"; loading: boolean; idx: number }
   | {
@@ -115,6 +116,7 @@ function reducer(
             text,
             loading: false,
             nextSteps: null,
+            aiGenerated: action.aiGenerated,
           })),
         ],
       };

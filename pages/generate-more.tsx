@@ -4,6 +4,7 @@ import {
   ButtonGroup,
   Heading,
   HStack,
+  Spacer,
   Text,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
@@ -34,7 +35,11 @@ function GenerateMore() {
     let newResolutions = await generateMore(textResolutions);
     if ("items" in newResolutions) {
       if (newResolutions.items.length > 0) {
-        dispatch({ type: "ADD_MANY", resolutions: newResolutions.items });
+        dispatch({
+          type: "ADD_MANY",
+          resolutions: newResolutions.items,
+          aiGenerated: true,
+        });
       } else {
         setNoResults(true);
       }
@@ -45,12 +50,18 @@ function GenerateMore() {
 
   return (
     <>
-      <ResolutionList>
-        <Heading>Generate More</Heading>
-        <Text>
-          Now let{"'"}s use some AI magic to generate you some more resolutions.
-        </Text>
-      </ResolutionList>
+      <HStack width="100%">
+        <Box flexGrow={1} width="100%">
+          <ResolutionList>
+            <Heading>Generate More</Heading>
+            <Text>
+              Now let{"'"}s use some AI magic to generate you some more
+              resolutions.
+            </Text>
+          </ResolutionList>
+        </Box>
+        <Spacer flexGrow={0} flexBasis={[null, null, "0", "50vw"]} />
+      </HStack>
       <HStack align="center" mt="4">
         <GradientButton
           onClick={generate}

@@ -57,11 +57,9 @@ function EditableControls({ onDelete }: { onDelete: () => void }) {
 
 export default function ResolutionList({
   editable = false,
-  skeleton = false,
   children,
 }: {
   editable?: boolean;
-  skeleton?: boolean;
   children?: ReactNode;
 }) {
   const [{ resolutions }, dispatch] = useResolutions();
@@ -106,8 +104,21 @@ export default function ResolutionList({
               flexGrow={1}
             >
               <EditableInput flexGrow={1} />
-              <EditablePreview flexGrow={1} />
-              {editable && (
+              <Box flexGrow={1}>
+                <EditablePreview />
+                {r.aiGenerated && (
+                  <Box
+                    as="span"
+                    ml="2"
+                    color="blue.300"
+                    userSelect="none"
+                    cursor="default"
+                  >
+                    <sup>AI</sup>
+                  </Box>
+                )}
+              </Box>
+              {(editable || r.aiGenerated) && (
                 <Box ml="3">
                   <EditableControls
                     onDelete={() => dispatch({ type: "REMOVE", idx })}
