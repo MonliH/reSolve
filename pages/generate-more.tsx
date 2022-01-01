@@ -43,14 +43,14 @@ function GenerateMore() {
         dispatch({ type: "ADD_MANY", resolutions: newResolutions.items });
       } else {
         setTryingAgain(true);
-        newResolutions = await generateMore(textResolutions, 0.8);
+        newResolutions = await generateMore(textResolutions, 0.3);
         if ("items" in newResolutions) {
           if (newResolutions.items.length > 0) {
             dispatch({ type: "ADD_MANY", resolutions: newResolutions.items });
+            setTryingAgain(false);
+          } else {
+            setTryingAgain(null);
           }
-          setTryingAgain(false);
-        } else {
-          setTryingAgain(null);
         }
       }
     }
@@ -72,13 +72,13 @@ function GenerateMore() {
           leftIcon={<Star size={20} />}
           onClick={generate}
           isDisabled={loading}
-          loadingText="Generating"
+          loadingText={tryingAgain === true ? "Retrying" : "Generating"}
           size="lg"
           isLoading={loading}
           variant={loading ? "outline" : "solid"}
         >
           <Box as="span" mt="1">
-            {tryingAgain === true ? "Retrying" : "Generate More"}
+            Generate More
           </Box>
         </Button>
         {tryingAgain === true ? (
@@ -90,8 +90,7 @@ function GenerateMore() {
           <Text color="red">{error}</Text>
         ) : tryingAgain === null ? (
           <Text color="orange">
-            No results generated. The API is likely being rate-limited; Try
-            again in a few moments.
+            No more results generated. Feel free to try again.
           </Text>
         ) : null}
       </HStack>

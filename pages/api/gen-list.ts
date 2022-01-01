@@ -73,8 +73,6 @@ Here are some New Year's Resolutions similar to ${similarString}:
     })
   );
 
-  console.log(allItems);
-
   await Promise.all(
     items.map(async (unnormalized) => {
       const item1 = await normalizeString(unnormalized);
@@ -118,7 +116,7 @@ export default async function handler(
   const { items, temperature }: { items: string[]; temperature?: number } =
     JSON.parse(req.body);
   try {
-    let newItems = await generateMore(items, temperature ?? 0.5);
+    let newItems = await generateMore(items, temperature ?? 0.15);
     res.status(200).json({ items: newItems });
   } catch (e) {
     res.status(500).json({ error: "Failed to generate new suggestions." });
