@@ -13,16 +13,11 @@ import ResolutionList from "../components/ResolutionList";
 import { generateMore } from "../lib/api";
 import { useResolutions } from "../lib/resolutionContext";
 import GradientButton from "../components/GradientButton";
+import withLogo from "../components/withLogo";
 
 function GenerateMore() {
   const router = useRouter();
   const [{ resolutions, generated }, dispatch] = useResolutions();
-
-  useEffect(() => {
-    if (resolutions.length == 0) {
-      router.replace("/", undefined, { shallow: true });
-    }
-  }, [resolutions]);
 
   const [[loading, error], setLoading] = useState<[boolean, null | undefined]>([
     false,
@@ -49,7 +44,7 @@ function GenerateMore() {
   };
 
   return (
-    <Box p="20" pr="50">
+    <>
       <ResolutionList>
         <Heading>Generate More</Heading>
         <Text>
@@ -59,8 +54,7 @@ function GenerateMore() {
       <HStack align="center" mt="4">
         <GradientButton
           onClick={generate}
-          isDisabled={loading}
-          disabled={loading}
+          isDisabled={loading || resolutions.length === 0}
           isLoading={loading}
         >
           Generate More
@@ -97,8 +91,8 @@ function GenerateMore() {
           {generated ? "Next" : "Skip"}
         </Button>
       </ButtonGroup>
-    </Box>
+    </>
   );
 }
 
-export default GenerateMore;
+export default withLogo(GenerateMore);

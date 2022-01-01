@@ -1,5 +1,13 @@
 import update from "immutability-helper";
-import React, { Dispatch, Reducer, ReducerAction, useReducer } from "react";
+import { useRouter } from "next/router";
+import React, {
+  Dispatch,
+  Reducer,
+  ReducerAction,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import { createContext, useContext } from "react";
 
 interface NextStep {
@@ -21,6 +29,7 @@ interface ResolutionCtx {
 
 type ResolutionAction =
   | { type: "ADD"; text: string }
+  | { type: "OVERWRITE"; value: ResolutionCtx }
   | { type: "REMOVE"; idx: number }
   | { type: "UPDATE"; idx: number; text: string }
   | { type: "ADD_MANY"; resolutions: string[] }
@@ -41,6 +50,8 @@ function reducer(
   action: ResolutionAction
 ): ResolutionCtx {
   switch (action.type) {
+    case "OVERWRITE":
+      return action.value;
     case "ADD":
       return update(state, {
         resolutions: {
@@ -130,10 +141,38 @@ export function ResolutionProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const state = useReducer(reducer, defaultVal);
+  const [state, dispatch] = useReducer(reducer, defaultVal);
+  const [loading, setLoading] = useState<boolean>(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const resolutions = localStorage.getItem("resolutions");
+    if (resolutions) {
+      const val = JSON.parse(resolutions);
+      if (val.resolutions && val.resolutions.length > 0) {
+        dispatch({ type: "OVERWRITE", value: val });
+        router.replace("/next-steps", undefined, { shallow: true });
+        return;
+      }
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (router.pathname === "/next-steps") {
+      setLoading(false);
+    }
+  }, [router.pathname]);
+
+  useEffect(() => {
+    localStorage.setItem("resolutions", JSON.stringify(state));
+  }, [state]);
+
   return (
-    <resolutionCtx.Provider value={state as ResolutionProviderProps}>
-      {children}
+    <resolutionCtx.Provider
+      value={[state, dispatch] as ResolutionProviderProps}
+    >
+      {!loading && children}
     </resolutionCtx.Provider>
   );
 }

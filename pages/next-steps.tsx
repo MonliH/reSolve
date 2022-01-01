@@ -5,6 +5,7 @@ import {
   Divider,
   Heading,
   HStack,
+  Spacer,
   Spinner,
   Text,
   VStack,
@@ -13,10 +14,11 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { ArrowLeft } from "react-feather";
 import GradientButton from "../components/GradientButton";
+import withLogo from "../components/withLogo";
 import { generateNextSteps } from "../lib/api";
 import { useResolutions } from "../lib/resolutionContext";
 
-export default function Tips() {
+function Tips() {
   const router = useRouter();
   const [{ resolutions }, dispatch] = useResolutions();
   const [loading, setLoading] = useState(false);
@@ -71,8 +73,8 @@ export default function Tips() {
   const done = resolutions.every((r) => r.nextSteps && r.nextSteps.length > 0);
 
   return (
-    <Box p="20" pr="50">
-      <Heading>Next Steps</Heading>
+    <>
+      <Heading>Your Next Steps</Heading>
       <Text mb="4">
         Now we{"'"}ll use some more AI magic to give you next steps to take, so
         can can accomplish your goals!
@@ -96,20 +98,23 @@ export default function Tips() {
                     <VStack align="left">
                       {r.nextSteps.map((next, idx) => {
                         return (
-                          <Checkbox
-                            isChecked={next.done}
-                            key={idx}
-                            onChange={(e) =>
-                              dispatch({
-                                type: "SET_NEXT_STEP_DONE",
-                                resolutionIdx: rIdx,
-                                setIdx: idx,
-                                value: e.target.checked,
-                              })
-                            }
-                          >
-                            {next.text}
-                          </Checkbox>
+                          <HStack key={next.text + idx}>
+                            <Checkbox
+                              flexGrow={0}
+                              isChecked={next.done}
+                              onChange={(e) =>
+                                dispatch({
+                                  type: "SET_NEXT_STEP_DONE",
+                                  resolutionIdx: rIdx,
+                                  setIdx: idx,
+                                  value: e.target.checked,
+                                })
+                              }
+                            >
+                              {next.text}
+                            </Checkbox>
+                            <Spacer />
+                          </HStack>
                         );
                       })}
                     </VStack>
@@ -126,6 +131,7 @@ export default function Tips() {
         onClick={startGeneration}
         isDisabled={loading || done}
         isLoading={loading}
+        bgGradient="linear(to-l, #3a3aff, #3ac4ff)"
       >
         {done ? "Done Generating" : "Generate Next Steps"}
       </GradientButton>
@@ -141,6 +147,8 @@ export default function Tips() {
       >
         Back
       </Button>
-    </Box>
+    </>
   );
 }
+
+export default withLogo(Tips);

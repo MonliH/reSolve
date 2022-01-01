@@ -5,6 +5,7 @@ import { animated, config, useSpring } from "react-spring";
 
 export default function GradientButton({
   children,
+  bgGradient = "linear(to-l, #7928CA, #FF0080)",
   ...buttonProps
 }: { children: ReactNode } & ButtonProps) {
   const [hover, setHover] = useState<boolean>(false);
@@ -23,11 +24,12 @@ export default function GradientButton({
         display="flex"
         variant="unstyled"
         p="4"
+        boxShadow="lg"
         alignItems="center"
-        bgGradient="linear(to-l, #7928CA, #FF0080)"
+        bgGradient={bgGradient}
         leftIcon={<Star size={20} />}
         _hover={{
-          bgGradient: "linear(to-l, #7928CA, #FF0080)",
+          bgGradient: bgGradient,
         }}
         loadingText="Generating"
         color="white"
