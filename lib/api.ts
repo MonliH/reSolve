@@ -18,7 +18,6 @@ export async function generateMore(
 
 export async function generateNextSteps(
   goal: string,
-  token: string,
   temperature?: number
 ): Promise<[NextSteps, number]> {
   const request = await fetch("/api/gen-next-steps", {
@@ -27,9 +26,6 @@ export async function generateNextSteps(
       goal,
       temperature,
     }),
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
   });
 
   return [await request.json(), request.status];
