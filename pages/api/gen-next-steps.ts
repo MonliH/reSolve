@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { API_KEY, DAVINCI_URL, ML_MODEL_URL } from "../../lib/utils";
+import { API_KEY, DAVINCI_URL, ML_MODEL_URL, rateLimit } from "../../lib/utils";
 
 export type NextSteps = { nextSteps: string[] } | { error: string };
 
@@ -68,14 +68,29 @@ Specific steps to take:`;
   return allItems;
 }
 
+const limiter = rateLimit({
+  interval: 70 * 1000,
+  uniqueTokenPerInterval: 10,
+});
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<NextSteps>
 ) {
   const { goal, temperature }: { goal: string; temperature?: number } =
     JSON.parse(req.body);
+  const token = req.headers.authorization?.split(" ")[1] || "DEFAULT_TOKEN";
   try {
-    let nextSteps = await generateNextSteps(goal, temperature ?? 0.5);
+    let nextSteps;
+    try {
+      await limiter.check(res, 11, token);
+      nextSteps = await generateNextSteps(goal, temperature ?? 0.5);
+    } catch (e) {
+      res.status(429).json({
+        error: "Too many requests. Please try again in a few moments.",
+      });
+      return;
+    }
     if (!nextSteps) {
       res.status(500).json({
         error: "Failed to generate new suggestions.",

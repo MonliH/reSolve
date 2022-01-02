@@ -9,6 +9,7 @@ import React, {
   useState,
 } from "react";
 import { createContext, useContext } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 export interface NextStep {
   text: string;
@@ -26,6 +27,7 @@ export interface Resolution {
 interface ResolutionCtx {
   resolutions: Resolution[];
   generated: boolean;
+  token: string;
 }
 
 type ResolutionAction =
@@ -42,6 +44,7 @@ type ResolutionAction =
       setIdx: number;
       value: boolean;
     }
+  | { type: "SET_TOKEN"; token: string }
   | { type: "SET_NEXT"; nextSteps: string[]; idx: number }
   | { type: "SET_ERROR"; error: string; idx: number }
   | { type: "RESET_ERROR"; idx: number };
@@ -107,6 +110,8 @@ function reducer(
           },
         },
       });
+    case "SET_TOKEN":
+      return { ...state, token: action.token };
     case "ADD_MANY":
       return {
         ...state,
@@ -128,6 +133,7 @@ function reducer(
 const defaultVal = {
   resolutions: [],
   generated: false,
+  token: "DEFAULT_TOKEN",
 };
 type ResolutionProviderProps = [
   ResolutionCtx,
@@ -148,15 +154,23 @@ export function ResolutionProvider({
   const router = useRouter();
 
   useEffect(() => {
+    let token = localStorage.getItem("token");
+    if (!token) {
+      token = uuidv4() as string;
+      localStorage.setItem("token", token);
+    }
+
     const resolutions = localStorage.getItem("resolutions");
     if (resolutions) {
       const val = JSON.parse(resolutions);
       if (val.resolutions && val.resolutions.length > 0) {
         dispatch({ type: "OVERWRITE", value: val });
+        dispatch({ type: "SET_TOKEN", token });
         router.replace("/next-steps", undefined, { shallow: true });
         return;
       }
     }
+    dispatch({ type: "SET_TOKEN", token });
     setLoading(false);
   }, []);
 

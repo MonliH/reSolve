@@ -59,7 +59,7 @@ function NextSteps({
 
 function Tips() {
   const router = useRouter();
-  const [{ resolutions }, dispatch] = useResolutions();
+  const [{ resolutions, token }, dispatch] = useResolutions();
   const [loading, setLoading] = useState(false);
 
   const startGeneration = async () => {
@@ -74,11 +74,18 @@ function Tips() {
 
       dispatch({ type: "SET_LOADING", loading: true, idx: i });
       dispatch({ type: "RESET_ERROR", idx: i });
-      const [value, _] = await generateNextSteps(resolutions[i].text);
+      const [value, status] = await generateNextSteps(
+        resolutions[i].text,
+        token
+      );
       if ("nextSteps" in value) {
         dispatch({ type: "SET_NEXT", idx: i, nextSteps: value.nextSteps });
       } else {
         dispatch({ type: "SET_ERROR", error: value.error, idx: i });
+        if (status == 429) {
+          dispatch({ type: "SET_LOADING", loading: false, idx: i });
+          break;
+        }
       }
       dispatch({ type: "SET_LOADING", loading: false, idx: i });
     }

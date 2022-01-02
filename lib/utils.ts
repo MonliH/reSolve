@@ -1,5 +1,7 @@
 import natural from "natural";
 import WordPOS from "wordpos";
+import LRU from "lru-cache";
+import { NextApiResponse } from "next";
 
 WordPOS.defaults = {
   includeData: true,
@@ -59,3 +61,40 @@ export const API_KEY: string = process.env.API_KEY!;
 export const ML_MODEL_URL: string = process.env.ML_MODEL_URL!;
 export const DAVINCI_URL: string =
   "https://api.openai.com/v1/engines/davinci/completions";
+
+export function rateLimit(options: {
+  interval?: number;
+  uniqueTokenPerInterval?: number;
+}): {
+  check: (
+    res: NextApiResponse<any>,
+    limit: number,
+    token: string
+  ) => Promise<null>;
+} {
+  const tokenCache = new LRU({
+    max: options.uniqueTokenPerInterval,
+    maxAge: options.interval,
+  });
+
+  return {
+    check: (res: NextApiResponse<any>, limit: number, token: string) =>
+      new Promise((resolve, reject) => {
+        const tokenCount = (tokenCache.get(token) || [0]) as [number];
+        if (tokenCount[0] === 0) {
+          tokenCache.set(token, tokenCount);
+        }
+        tokenCount[0] += 1;
+
+        const currentUsage = tokenCount[0];
+        const isRateLimited = currentUsage >= limit;
+        res.setHeader("X-RateLimit-Limit", limit);
+        res.setHeader(
+          "X-RateLimit-Remaining",
+          isRateLimited ? 0 : limit - currentUsage
+        );
+
+        return isRateLimited ? reject() : resolve(null);
+      }),
+  };
+}
