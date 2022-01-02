@@ -33,7 +33,6 @@ const Home: NextPage = () => {
   };
 
   const canContinue = resolutions.length > 0;
-  console.log(resolutions, canContinue, resolutions.length);
   const router = useRouter();
 
   const generateMore = () => {
